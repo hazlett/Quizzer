@@ -7,43 +7,64 @@ using System;
 
 public class Loading : MonoBehaviour {
 
+    private static Loading instance;
+    public static Loading Instance { get { return instance; } }
     private bool loaded = false, loading = false, categories = false;
     private string getQuestionsXMLURL = "http://hazlett206.ddns.net/QuestionManager/GetQuestionsXML.php",
         getCategoriesURL = "http://hazlett206.ddns.net/QuestionManager/GetCategories.php";
-    private string name = "QuestionManager";
     private string message = "";
-	void Start () {
-        
-	}
+    private List<string> classrooms;
+    public List<string> Classrooms { get { return classrooms; } }
+	void Awake()
+    {
+        DontDestroyOnLoad(gameObject);
+        if (instance == null)
+        {
+            instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+
+    }
 	
 	void Update () {
 	    if (loaded && categories)
         {
-            Application.LoadLevel("Menu");
+            loading = false;
+            Application.LoadLevel("GameMenu");
         }
 	}
     void OnGUI()
     {
+        GUILayout.Label(message);
         if (loading)
         {
             GUI.Label(new Rect(Screen.width * 0.5f - 50.0f, 0, 100.0f, 50.0f), "...LOADING...");
         }
-        else
-        {
-            GUILayout.Label(message);
-            GUI.Label(new Rect(0, Screen.height * 0.2f - 50.0f, Screen.width * 0.5f, 50.0f), "CLASS ROOM NAME");
-            name = GUI.TextField(new Rect(0, Screen.height * 0.2f, Screen.width * 0.5f, Screen.height * 0.1f), name);
-            if (GUI.Button(new Rect(0, Screen.height * 0.3f, Screen.width * 0.5f, Screen.height * 0.1f), "BEGIN"))
-            {
-                loading = true;
-                getQuestionsXMLURL = "http://hazlett206.ddns.net/" + name + "/GetQuestionsXML.php";
-                getCategoriesURL = "http://hazlett206.ddns.net/" + name + "/GetCategories.php";
-                StartCoroutine(Load());
-                StartCoroutine(LoadCategories());
-            }
-        }
     }
-
+    public void LoadClassrooms()
+    {
+        StartCoroutine(GetClassrooms());
+    }
+    internal void SetClassrooms(List<string> classrooms)
+    {
+        this.classrooms = classrooms;
+    }
+    private IEnumerator GetClassrooms()
+    {
+        SetClassrooms((new List<string>() { "QuestionManager", "Erin" }));
+        yield return null;
+    }
+    public void LoadQuestions(string name)
+    {
+        loading = true;
+        getQuestionsXMLURL = "http://hazlett206.ddns.net/" + name + "/GetQuestionsXML.php";
+        getCategoriesURL = "http://hazlett206.ddns.net/" + name + "/GetCategories.php";
+        StartCoroutine(Load());
+        StartCoroutine(LoadCategories());
+    }
     private IEnumerator LoadCategories()
     {
         Debug.Log("Loading");
