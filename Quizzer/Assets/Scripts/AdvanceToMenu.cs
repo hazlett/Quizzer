@@ -13,15 +13,24 @@ public class AdvanceToMenu : MonoBehaviour {
 
     void OnGUI()
     {
-        GUILayout.Label("USER NAME");
-        userName = GUILayout.TextField(userName);
-        if (GUILayout.Button("ADVANCE"))
+        //GUILayout.Label("USER NAME");
+        //userName = GUILayout.TextField(userName);
+        //if (GUILayout.Button("ADVANCE"))
+        //{
+        //    StartCoroutine(LoadUser(userName));
+        //}
+        //if (GUILayout.Button("CREATE USER"))
+        //{
+        //    StartCoroutine(CreateUser(userName));
+        //}
+        GUILayout.Label("<b>ALL USERS</b>");
+        if (GUILayout.Button("David"))
         {
-            StartCoroutine(LoadUser(userName));
+            StartCoroutine(LoadUser("David"));
         }
-        if (GUILayout.Button("CREATE USER"))
+        if (GUILayout.Button("John"))
         {
-            StartCoroutine(CreateUser(userName));
+            StartCoroutine(LoadUser("John"));
         }
     }
 	
@@ -70,7 +79,7 @@ public class AdvanceToMenu : MonoBehaviour {
     }
     private IEnumerator GetClassrooms()
     {
-        Loading.Instance.SetClassrooms((new List<string>() { "QuestionManager", "Erin" }));
+        Loading.Instance.SetClassrooms((new List<string>() { "QuestionManager" }));
         yield return null;
     }
     private User DeserializeToUser(string text)

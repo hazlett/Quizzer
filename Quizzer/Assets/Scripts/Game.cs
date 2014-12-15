@@ -18,13 +18,19 @@ public class Game {
     public string Player1 = "";
 
     [XmlAttribute]
-    public string Player1Correct = "";
+    public string Player1Correct = "0";
+
+    [XmlAttribute]
+    public string Player1TotalCorrect = "0";
 
     [XmlAttribute]
     public string Player2 = "";
 
     [XmlAttribute]
-    public string Player2Correct = "";
+    public string Player2Correct = "0";
+
+    [XmlAttribute]
+    public string Player2TotalCorrect = "0";
 
     [XmlAttribute]
     public string Round = "";
@@ -36,10 +42,11 @@ public class Game {
     public string Classroom = "";
 
     public Game() { }
-    public Game(string me, string them)
+    public Game(string me, string them, string classroom)
     {
         Player1 = me;
         Player2 = them;
+        Classroom = classroom;
     }
     public string ToXml()
     {

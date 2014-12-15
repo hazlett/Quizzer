@@ -2,34 +2,49 @@
 using System.Collections;
 
 public class MenuGUI : MonoBehaviour {
+    private Vector2 gamesScroll = new Vector2();
+    private string classroom = "QuestionManager";
+
+    void Start()
+    {
+        Questions.Instance.Refresh();
+        Questions.Instance.Refresh();
+    }
 
     void OnGUI()
     {
-        GUILayout.Label("MAIN MENU");
+        GUILayout.BeginHorizontal();
+        GUILayout.Label("<b>MAIN MENU</b>");
+        if (GUILayout.Button("BACK"))
+        {
+            Application.LoadLevel("Login");
+        }
+        GUILayout.EndHorizontal();
+        GUILayout.BeginHorizontal();
         if (GUILayout.Button("NEW GAME"))
         {
-            Questions.Instance.NewGame();
+            Application.LoadLevel("NewGameMenu");
         }
         if (GUILayout.Button("REFRESH"))
         {
             Questions.Instance.Refresh();
         }
-        GUILayout.Label("CLASSROOMS");
-        foreach (string classroom in Loading.Instance.Classrooms)
-        {
-            if (GUILayout.Button(classroom))
-            {
-                Loading.Instance.LoadQuestions(classroom);
-            }
-        }
+        GUILayout.EndHorizontal();
+        //GUILayout.Label("CLASSROOMS");
+        //foreach (string room in Loading.Instance.Classrooms)
+        //{
+        //    if (GUILayout.Button(room))
+        //    {
+        //        this.classroom = room;
+        //    }
+        //}
+        GUILayout.Label("<b>GAMES</b>");
+        gamesScroll = GUILayout.BeginScrollView(gamesScroll);
         GUILayout.Label("GAME INVITES");
         foreach (string invite in Questions.Instance.Invites)
         {
             GUILayout.BeginHorizontal();
-            if (GUILayout.Button(invite))
-            {
-
-            }
+            GUILayout.Label(invite);
             if (GUILayout.Button("ACCEPT"))
             {
                 Questions.Instance.AcceptInvite(invite);
@@ -47,7 +62,8 @@ public class MenuGUI : MonoBehaviour {
         {
             if (GUILayout.Button(game.ID))
             {
-                Questions.Instance.ChangeTurn(game);
+                Questions.Instance.SetGame(game);
+                Application.LoadLevel("LoadGame");
             }
         }
         GUILayout.Space(15);
@@ -59,5 +75,6 @@ public class MenuGUI : MonoBehaviour {
 
             }
         }
+        GUILayout.EndScrollView();
     }
 }

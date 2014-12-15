@@ -12,7 +12,18 @@ public class MainGUI : MonoBehaviour {
     private bool yourTurn;
 	void Start () {
         yourTurn = true;
-        correct = 0;
+        if (Questions.Instance.CurrentGame.Turn == "1")
+        {
+            correct = int.Parse(Questions.Instance.CurrentGame.Player1Correct);
+        }
+        else if (Questions.Instance.CurrentGame.Turn == "2")
+        {
+            correct = int.Parse(Questions.Instance.CurrentGame.Player2Correct);
+        }
+        else
+        {
+            correct = 0;
+        }
         asked = null;
         timer = 0;
         questionAsked = false;
@@ -51,7 +62,16 @@ public class MainGUI : MonoBehaviour {
         {
             if (GUI.Button(new Rect(0, Screen.height * 0.2f, Screen.width * 0.5f, Screen.height * 0.25f), "CONTINUE"))
             {
-                Application.LoadLevel("Menu");
+                if (Questions.Instance.CurrentGame.Turn == "1")
+                {
+                    Questions.Instance.CurrentGame.Player1Correct = correct.ToString();
+                }
+                else if (Questions.Instance.CurrentGame.Turn == "2")
+                {
+                    Questions.Instance.CurrentGame.Player2Correct = correct.ToString();
+                }
+       
+                Application.LoadLevel("ChangeTurns");               
             }
         }
         else if (!questionAsked)
@@ -96,6 +116,7 @@ public class MainGUI : MonoBehaviour {
             message = "SPINNING";
             int random = Random.Range(0, 6);
             asked = Questions.Instance.RetrieveQuestion(random);
+            Debug.Log("Random: " + random + " | " + "Asked: " + asked.ID);
             answers = new List<string>();
             answers.Add(asked.CorrectAnswer);
             foreach (string answer in asked.WrongAnswers)
@@ -106,8 +127,9 @@ public class MainGUI : MonoBehaviour {
             questionAsked = true;
             message = "ANSWER QUESTION";
         }
-        catch 
+        catch (System.Exception e)
         {
+            Debug.LogError("Error spinning: " + e.Message);
             Spin();
         }
     }

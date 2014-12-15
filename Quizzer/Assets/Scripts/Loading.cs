@@ -33,7 +33,9 @@ public class Loading : MonoBehaviour {
 	    if (loaded && categories)
         {
             loading = false;
-            Application.LoadLevel("GameMenu");
+            loaded = false;
+            categories = false;
+            Application.LoadLevel("Main");
         }
 	}
     void OnGUI()
@@ -54,11 +56,15 @@ public class Loading : MonoBehaviour {
     }
     private IEnumerator GetClassrooms()
     {
-        SetClassrooms((new List<string>() { "QuestionManager", "Erin" }));
+        SetClassrooms((new List<string>() { "QuestionManager" }));
         yield return null;
     }
     public void LoadQuestions(string name)
     {
+        if (name == "" || name == null)
+        {
+            name = "QuestionManager";
+        }
         loading = true;
         getQuestionsXMLURL = "http://hazlett206.ddns.net/" + name + "/GetQuestionsXML.php";
         getCategoriesURL = "http://hazlett206.ddns.net/" + name + "/GetCategories.php";

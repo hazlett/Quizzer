@@ -22,6 +22,9 @@ public class Questions : MonoBehaviour {
     private List<string> invites;
     public List<string> Invites { get { return invites; } }
     private List<Game> gameInvites;
+    private int refreshing;
+    private Game currentGame;
+    public Game CurrentGame { get { return currentGame; } }
 
     void Awake()
     {
@@ -36,20 +39,21 @@ public class Questions : MonoBehaviour {
         }
     }
 	void Start () {
+        refreshing = 0;
         invites = new List<string>();
         allQuestions = new List<Question>();
         categories = new List<Question>[] { new List<Question>(), new List<Question>(), new List<Question>(), new List<Question>(), new List<Question>(), new List<Question>() };
 	}
 	
-	void Update () {
-
-	}
     internal void SetUser(User user)
     {
         this.user = user;
         Refresh();
     }
-
+    internal void SetGame(Game game)
+    {
+        this.currentGame = game;
+    }
     private void GetUserGames()
     {
         games = new List<Game>();
@@ -62,13 +66,18 @@ public class Questions : MonoBehaviour {
     }
     internal void Refresh()
     {
-        CheckInvites();
-        GetUserGames();
+        if (refreshing == 0)
+        {
+            Debug.Log("Refreshing");
+            CheckInvites();
+            GetUserGames();
+        }
     }
 
 
     private IEnumerator AddGameFromServer(string id)
     {
+        refreshing++;
         WWWForm form = new WWWForm();
         form.AddField("id", id);
         WWW www = new WWW("http://hazlett206.ddns.net/Quizzer/GetGame.php", form);
@@ -76,7 +85,7 @@ public class Questions : MonoBehaviour {
         if (www.error == null)
         {
             Game game = DeserializeToGame(www.text);
-            if (game != null)
+            if ((game != null) && (!games.Contains(game)))
             {
                 games.Add(game);
                 CheckTurn(game);
@@ -94,6 +103,7 @@ public class Questions : MonoBehaviour {
         {
             Debug.Log("Adding game error: " + www.error);
         }
+        refreshing--;
     }
     private void CheckTurn(Game game)
     {
@@ -102,21 +112,37 @@ public class Questions : MonoBehaviour {
             case "1":
                 if (user.Name == game.Player1)
                 {
-                    myTurn.Add(game);
+                    if (!myTurn.Contains(game))
+                    {
+                        Debug.Log("Game: " + game.ID);
+                        myTurn.Add(game);
+                    }
                 }
                 else
                 {
-                    oppTurn.Add(game);
+                    if (!oppTurn.Contains(game))
+                    {
+                        Debug.Log("Game: " + game.ID);
+                        oppTurn.Add(game);
+                    }
                 }
                 break;
             case "2":
                 if (user.Name == game.Player2)
                 {
-                    myTurn.Add(game);
+                    if (!myTurn.Contains(game))
+                    {
+                        Debug.Log("Game: " + game.ID);
+                        myTurn.Add(game);
+                    }
                 }
                 else
                 {
-                    oppTurn.Add(game);
+                    if (!oppTurn.Contains(game))
+                    {
+                        Debug.Log("Game: " + game.ID);
+                        oppTurn.Add(game);
+                    }
                 }
                 break;
             default:
@@ -150,10 +176,10 @@ public class Questions : MonoBehaviour {
             return null;
         }
     }
-    public void NewGame()
+    public void NewGame(string opponent, string classroom)
     {
         Debug.Log("USER: " + user.Name);
-        StartCoroutine(CreateGame(new Game(user.Name, "David")));
+        StartCoroutine(CreateGame(new Game(user.Name, opponent, classroom)));
     }
     private IEnumerator CreateGame(Game game)
     {
@@ -209,6 +235,7 @@ public class Questions : MonoBehaviour {
         {
             Debug.Log("Invite error: " + www.error);
         }
+        Application.LoadLevel("Menu");
     }
     public void CheckInvites()
     {
@@ -238,7 +265,7 @@ public class Questions : MonoBehaviour {
             Debug.Log("Getting invites error: " + www.error);
         }
     }
-    private List<string> DeserializeToList(string text)
+    internal List<string> DeserializeToList(string text)
     {
         XmlDocument doc = new XmlDocument();
         doc.LoadXml(text);
@@ -263,6 +290,7 @@ public class Questions : MonoBehaviour {
     public Question RetrieveQuestion(int category)
     {
         int random = UnityEngine.Random.Range(0, categories[category].Count);
+        Debug.Log("Category: " + category + " | Random: " + random);
         return categories[category][random];
     }
     private void Sort()
@@ -285,33 +313,34 @@ public class Questions : MonoBehaviour {
         invites = new List<string>();
         StartCoroutine(AcceptGameInvite(invite));
     }
-    internal void ChangeTurn(Game game)
+
+    internal void ChangeTurn()
     {
-        switch (game.Turn)
+        switch (currentGame.Turn)
         {
             case "0":
-                game.Turn = "1";
+                currentGame.Turn = "1";
                 break;
             case "1":
-                game.Turn = "2";
+                currentGame.Turn = "2";
                 break;
             case "2":
-                game.Turn = "1";
+                currentGame.Turn = "1";
                 break;
             default:
-                games.Remove(game);
-                user.Games.Remove(game.ID);
+                games.Remove(currentGame);
+                user.Games.Remove(currentGame.ID);
                 Debug.Log("Unknown turn");
                 break;
         }
-        StartCoroutine(SaveGame(game));
+        StartCoroutine(SaveGame());
     }
 
-    private IEnumerator SaveGame(Game game)
+    private IEnumerator SaveGame()
     {
         WWWForm form2 = new WWWForm();
-        form2.AddField("id", game.ID);
-        form2.AddField("content", game.ToXml());
+        form2.AddField("id", currentGame.ID);
+        form2.AddField("content", currentGame.ToXml());
         WWW www2 = new WWW("http://hazlett206.ddns.net/Quizzer/SaveGame.php", form2);
         yield return www2;
         if (www2.error == null)
@@ -323,6 +352,7 @@ public class Questions : MonoBehaviour {
             Debug.Log("Creating game with ID ERROR: " + www2.error);
         }
         Refresh();
+        Application.LoadLevel("Menu");
     }
     private IEnumerator AcceptGameInvite(string invite)
     {
@@ -354,6 +384,7 @@ public class Questions : MonoBehaviour {
         {
             Debug.Log("Error accepting: " + www.error);
         }
+        Refresh();
     }
     private IEnumerator DeclineGameInvite(string invite)
     {
@@ -393,4 +424,6 @@ public class Questions : MonoBehaviour {
             Debug.Log("Create user error: " + www.error);
         }
     }
+
+
 }
