@@ -3,10 +3,14 @@ using System.Collections;
 using System.Xml.Serialization;
 using System.Collections.Generic;
 using System.IO;
+using System;
 
 
 [XmlRoot]
 public class Game {
+
+    [XmlIgnore]
+    internal static readonly string WinState = "111111";
 
     [XmlAttribute]
     public string ID = "";
@@ -21,7 +25,7 @@ public class Game {
     public string Player1Correct = "0";
 
     [XmlAttribute]
-    public string Player1TotalCorrect = "0";
+    public string Player1Totals = "000000";
 
     [XmlAttribute]
     public string Player2 = "";
@@ -30,13 +34,16 @@ public class Game {
     public string Player2Correct = "0";
 
     [XmlAttribute]
-    public string Player2TotalCorrect = "0";
+    public string Player2Totals = "000000";
 
     [XmlAttribute]
     public string Round = "";
 
     [XmlAttribute]
     public string Active = "";
+
+    [XmlAttribute]
+    public string DateCreated = "";
 
     [XmlAttribute]
     public string Classroom = "";
@@ -47,6 +54,8 @@ public class Game {
         Player1 = me;
         Player2 = them;
         Classroom = classroom;
+        Player2Totals = (Player2Totals.ToCharArray()[2] = 'c').ToString();
+        DateCreated = DateTime.Now.ToString();
     }
     public string ToXml()
     {

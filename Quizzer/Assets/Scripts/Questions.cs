@@ -12,9 +12,11 @@ public class Questions : MonoBehaviour {
     private List<Game> games = new List<Game>();
     private List<Game> myTurn = new List<Game>();
     private List<Game> oppTurn = new List<Game>();
+    private List<Game> oldGames = new List<Game>();
     public List<Game> Games { get { return games; } }
     public List<Game> MyTurn { get { return myTurn; } }
     public List<Game> OppTurn { get { return oppTurn; } }
+    public List<Game> OldGames { get { return oldGames; } }
     private User user;
     public User CurrentUser { get { return user; } }
     private string[] category;
@@ -59,6 +61,7 @@ public class Questions : MonoBehaviour {
         games = new List<Game>();
         myTurn = new List<Game>();
         oppTurn = new List<Game>();
+        oldGames = new List<Game>();
         foreach (string id in user.Games)
         {
             StartCoroutine(AddGameFromServer(id));
@@ -145,6 +148,18 @@ public class Questions : MonoBehaviour {
                     }
                 }
                 break;
+            case "-1":
+            case "-2":
+                TimeSpan gameElapsed = DateTime.Now.Subtract(DateTime.Parse(game.DateCreated));
+                if (gameElapsed.TotalDays > 3)
+                {
+                    DeleteGame(game);
+                }
+                else
+                {
+                    oldGames.Add(game);
+                }
+                break;
             default:
                 try
                 {
@@ -155,6 +170,28 @@ public class Questions : MonoBehaviour {
                 Debug.Log("Unknown turn on CheckTurn: " + game.Turn);
                 break;
         }
+    }
+    internal void DeleteGame(Game game)
+    {
+        Debug.Log("Deleting game");
+        StartCoroutine(RemoveGame(game));
+    }
+    private IEnumerator RemoveGame(Game game)
+    {
+        Debug.Log("Removing game: " + game.ID);
+        WWWForm form = new WWWForm();
+        form.AddField("gameid", game.ID);
+        WWW www = new WWW("http://hazlett206.ddns.net/Quizzer/RemoveGame.php", form);
+        yield return www;
+        if (www.error == null)
+        {
+            Debug.Log("Removed game: " + game.ID);
+        }
+        else
+        {
+            Debug.Log("ERROR REMOVING: " + game.ID + " | " + www.error);
+        }
+        Refresh();
     }
     private Game DeserializeToGame(string text)
     {
@@ -243,6 +280,7 @@ public class Questions : MonoBehaviour {
     }
     private IEnumerator GetGameInvites()
     {
+        Debug.Log("Getting invites");
         WWWForm form = new WWWForm();
         form.AddField("userid", user.Name);
         WWW www = new WWW("http://hazlett206.ddns.net/Quizzer/CheckInvites.php", form);
@@ -316,16 +354,39 @@ public class Questions : MonoBehaviour {
 
     internal void ChangeTurn()
     {
+        if (Game.WinState == currentGame.Player1Totals)
+        {
+            currentGame.Turn = "-1";
+        }
+        else if (Game.WinState == currentGame.Player2Totals)
+        {
+            currentGame.Turn = "-2";
+        }
         switch (currentGame.Turn)
         {
+            case "-2":
+                Debug.Log("GameOver: P2 won");
+                currentGame.Active = "false";
+                break;
+            case "-1":
+                Debug.Log("GameOver: P1 won");
+                currentGame.Active = "false";
+                break;
             case "0":
+                Debug.Log("Turn 0");
+                currentGame.Active = "true";
                 currentGame.Turn = "1";
                 break;
             case "1":
+                Debug.Log("Turn 1");
                 currentGame.Turn = "2";
+                currentGame.Active = "true";
                 break;
             case "2":
+                Debug.Log("Turn 2");
                 currentGame.Turn = "1";
+                currentGame.Round = (int.Parse(currentGame.Round) + 1).ToString();
+                currentGame.Active = "true";
                 break;
             default:
                 games.Remove(currentGame);

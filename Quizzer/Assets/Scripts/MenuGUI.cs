@@ -56,23 +56,55 @@ public class MenuGUI : MonoBehaviour {
             GUILayout.EndHorizontal();
         }
 
-        GUILayout.Label("ACTIVE GAMES");
+        GUILayout.Label("<b>ACTIVE GAMES</b>");
         GUILayout.Label("MY TURN");
         foreach (Game game in Questions.Instance.MyTurn)
         {
+            GUILayout.BeginHorizontal();
             if (GUILayout.Button(game.ID))
             {
                 Questions.Instance.SetGame(game);
                 Application.LoadLevel("LoadGame");
             }
+            if (GUILayout.Button("REMOVE"))
+            {
+                Questions.Instance.DeleteGame(game);
+            }
+            GUILayout.EndHorizontal();
         }
         GUILayout.Space(15);
         GUILayout.Label("OPPONENT TURN");
         foreach (Game game in Questions.Instance.OppTurn)
         {
-            if (GUILayout.Button(game.ID))
+            if (game.Player1 == Questions.Instance.CurrentUser.Name)
+                GUILayout.Box("GAME WITH: " + game.Player2);
+            else if (game.Player2 == Questions.Instance.CurrentUser.Name)
+                GUILayout.Box("GAME WITH: " + game.Player1);
+        }
+        GUILayout.Label("<b>PREVIOUS GAMES</b>");
+        foreach (Game game in Questions.Instance.OldGames)
+        {
+            if (game.Player1 == Questions.Instance.CurrentUser.Name)
             {
-
+                if (game.Turn == "-1")
+                {
+                    GUILayout.Label("YOU BEAT " + game.Player2);
+                }
+                else
+                {
+                    GUILayout.Label("YOU LOST TO " + game.Player2);
+                }
+            }
+            else if (game.Player2 == Questions.Instance.CurrentUser.Name)
+            {
+                if (game.Turn == "-2")
+                {
+                    GUILayout.Label("YOU BEAT " + game.Player1);
+                }
+                else
+                {
+                    GUILayout.Label("YOU LOST TO " + game.Player1);
+                }
             }
         }
         GUILayout.EndScrollView();
