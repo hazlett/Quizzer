@@ -40,6 +40,7 @@ public class Loading : MonoBehaviour {
 	}
     void OnGUI()
     {
+        GUI.matrix = Matrix4x4.TRS(Vector3.zero, Quaternion.identity, new Vector3(Screen.width / Utility.SCREENHEIGHT, Screen.height / Utility.SCREENWIDTH, 1)); 
         GUILayout.Label(message);
         if (loading)
         {
@@ -120,7 +121,16 @@ public class Loading : MonoBehaviour {
             XmlReader reader = new XmlNodeReader(doc);
 
             obj = serializer.Deserialize(reader) as List<Question>;
-
+#if UNITY_EDITOR
+            Debug.Log("Questions");
+            int count = 0;
+            foreach (Question q in obj)
+            {
+                Debug.Log(q.ID + " | " + q.QuestionText);
+                count++;
+            }
+            Debug.Log("Number of Questions: " + count);
+#endif
             return obj;
         }
         catch (Exception)

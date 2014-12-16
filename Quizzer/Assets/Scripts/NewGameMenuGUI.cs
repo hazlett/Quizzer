@@ -16,6 +16,7 @@ public class NewGameMenuGUI : MonoBehaviour {
 
     void OnGUI()
     {
+        GUI.matrix = Matrix4x4.TRS(Vector3.zero, Quaternion.identity, new Vector3(Screen.width / Utility.SCREENHEIGHT, Screen.height / Utility.SCREENWIDTH, 1)); 
         if (GUILayout.Button("BACK"))
         {
             Application.LoadLevel("Menu");

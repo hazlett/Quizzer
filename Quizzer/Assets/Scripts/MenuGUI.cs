@@ -4,7 +4,6 @@ using System.Collections;
 public class MenuGUI : MonoBehaviour {
     private Vector2 gamesScroll = new Vector2();
     private string classroom = "QuestionManager";
-
     void Start()
     {
         Questions.Instance.Refresh();
@@ -13,8 +12,9 @@ public class MenuGUI : MonoBehaviour {
 
     void OnGUI()
     {
+        GUI.matrix = Matrix4x4.TRS(Vector3.zero, Quaternion.identity, new Vector3(Screen.width / Utility.SCREENHEIGHT, Screen.height / Utility.SCREENWIDTH, 1)); 
         GUILayout.BeginHorizontal();
-        GUILayout.Label("<b>MAIN MENU</b>");
+        GUILayout.Label("<b>MAIN MENU</b> Welcome " + Questions.Instance.CurrentUser.Name);
         if (GUILayout.Button("BACK"))
         {
             Application.LoadLevel("Login");
@@ -60,17 +60,34 @@ public class MenuGUI : MonoBehaviour {
         GUILayout.Label("MY TURN");
         foreach (Game game in Questions.Instance.MyTurn)
         {
-            GUILayout.BeginHorizontal();
-            if (GUILayout.Button(game.ID))
+            if (game.Player1 == Questions.Instance.CurrentUser.Name)
             {
-                Questions.Instance.SetGame(game);
-                Application.LoadLevel("LoadGame");
+                GUILayout.BeginHorizontal();
+                if (GUILayout.Button("GAME WITH: " + game.Player2))
+                {
+                    Questions.Instance.SetGame(game);
+                    Application.LoadLevel("LoadGame");
+                }
+                if (GUILayout.Button("REMOVE"))
+                {
+                    Questions.Instance.DeleteGame(game);
+                }
+                GUILayout.EndHorizontal();
             }
-            if (GUILayout.Button("REMOVE"))
+            else if (game.Player2 == Questions.Instance.CurrentUser.Name)
             {
-                Questions.Instance.DeleteGame(game);
+                GUILayout.BeginHorizontal();
+                if (GUILayout.Button("GAME WITH: " + game.Player1))
+                {
+                    Questions.Instance.SetGame(game);
+                    Application.LoadLevel("LoadGame");
+                }
+                if (GUILayout.Button("REMOVE"))
+                {
+                    Questions.Instance.DeleteGame(game);
+                }
+                GUILayout.EndHorizontal();
             }
-            GUILayout.EndHorizontal();
         }
         GUILayout.Space(15);
         GUILayout.Label("OPPONENT TURN");
@@ -90,9 +107,13 @@ public class MenuGUI : MonoBehaviour {
                 {
                     GUILayout.Label("YOU BEAT " + game.Player2);
                 }
-                else
+                else if (game.Turn == "-2")
                 {
                     GUILayout.Label("YOU LOST TO " + game.Player2);
+                }
+                else
+                {
+                    GUILayout.Label("YOU TIED " + game.Player2);
                 }
             }
             else if (game.Player2 == Questions.Instance.CurrentUser.Name)
@@ -101,9 +122,13 @@ public class MenuGUI : MonoBehaviour {
                 {
                     GUILayout.Label("YOU BEAT " + game.Player1);
                 }
-                else
+                else if (game.Turn == "-1")
                 {
                     GUILayout.Label("YOU LOST TO " + game.Player1);
+                }
+                else
+                {
+                    GUILayout.Label("YOU TIED " + game.Player1);
                 }
             }
         }

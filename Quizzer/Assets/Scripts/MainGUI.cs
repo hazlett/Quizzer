@@ -7,18 +7,22 @@ public class MainGUI : MonoBehaviour {
     private bool questionAsked, advance;
     private Question asked;
     private List<string> answers;
-    private string message = "";
+    private string message = "", transitionMessage = "", feedbackMessage = "";
     private int correct;
     private string totals;
     private string player;
-    private bool yourTurn;
+    private bool yourTurn, transition;
     private int attempt;
-    private bool crowning, attemptingCrown;
+    private bool crowning, attemptingCrown, feedback;
+    private Vector2 scroll;
 	void Start () {
         attempt = -1;
         attemptingCrown = false;
+        feedback = false;
+        transition = false;
         crowning = false;
         yourTurn = true;
+        scroll = new Vector2();
         if (Questions.Instance.CurrentGame.Turn == "1")
         {
             correct = int.Parse(Questions.Instance.CurrentGame.Player1Correct);
@@ -71,25 +75,46 @@ public class MainGUI : MonoBehaviour {
     }
     void OnGUI()
     {
-        GUILayout.Label("<b>ROUND: </b>" + Questions.Instance.CurrentGame.Round);
-        if ((crowning) && (!attemptingCrown))
+        GUI.matrix = Matrix4x4.TRS(Vector3.zero, Quaternion.identity, new Vector3(Screen.width / Utility.SCREENHEIGHT, Screen.height / Utility.SCREENWIDTH, 1)); 
+        if (Questions.Instance.CurrentGame.Round == "0")
+        {
+            GUILayout.Label("<b>ACCEPTING INVITATION: INITIAL ROUND</b>");
+        }
+        else
+        {
+            GUILayout.Label("<b>ROUND: </b>" + Questions.Instance.CurrentGame.Round);
+        }
+        if (feedback)
+        {
+            GUILayout.Label(feedbackMessage);
+            if (GUILayout.Button("CONTINUE"))
+            {
+                feedback = false;
+            }
+        }
+        else if (transition)
+        {
+            if (GUILayout.Button("<b>" + transitionMessage + "</b>\nClick here to continue"))
+            {
+                transition = false;
+            }
+        }
+        else if ((crowning) && (!attemptingCrown))
         {
             DrawCrowning();
         }
         else
-        {
+        {         
             DrawGameplay();
         }
         
     }
     private void DrawCrowning()
     {
-        GUILayout.Label("TURN: " + Questions.Instance.CurrentGame.Turn);
-        GUILayout.Label("P1: " + Questions.Instance.CurrentGame.Player1 + " " + Questions.Instance.CurrentGame.Player1Totals);
-        GUILayout.Label("P2: " + Questions.Instance.CurrentGame.Player2 + " " + Questions.Instance.CurrentGame.Player2Totals);
+        GUILayout.Label("<b>CROWNING</b>");
+        GUILayout.Label("CHOOSE A CATEGORY");
         if (Questions.Instance.CurrentGame.Turn == "1")
         {
-            GUILayout.Label("Player1Crowning");
             for (int i = 0; i < Questions.Instance.CurrentGame.Player1Totals.Length; i++)
             {
                 if (Questions.Instance.CurrentGame.Player1Totals[i] == '0')
@@ -101,13 +126,12 @@ public class MainGUI : MonoBehaviour {
                 }
                 else if (Questions.Instance.CurrentGame.Player1Totals[i] == '1')
                 {
-                    GUILayout.Box(Questions.Instance.Category[i]);
+                    GUILayout.Box(Questions.Instance.Category[i] + " *ALREADY OWN CROWN*");
                 }
             }
         }
         else if (Questions.Instance.CurrentGame.Turn == "2")
         {
-            GUILayout.Label("Player2Crowning");
             for (int i = 0; i < Questions.Instance.CurrentGame.Player2Totals.Length; i++)
             {
                 if (Questions.Instance.CurrentGame.Player2Totals[i] == '0')
@@ -119,7 +143,7 @@ public class MainGUI : MonoBehaviour {
                 }
                 else if (Questions.Instance.CurrentGame.Player2Totals[i] == '1')
                 {
-                    GUILayout.Box(Questions.Instance.Category[i]);
+                    GUILayout.Box(Questions.Instance.Category[i] + " *ALREADY OWN CROWN*");
                 }
             }
         }
@@ -132,28 +156,25 @@ public class MainGUI : MonoBehaviour {
     private void DrawGameplay()
     {
         if (questionAsked)
+        {
             GUILayout.Box(Questions.Instance.Category[int.Parse(asked.Category)]);
-        GUILayout.BeginHorizontal();
-        GUILayout.Label("CORRECT: " + correct);
-        if (questionAsked)
             GUILayout.Label("TIME TO ANSWER: " + timeRemaining.ToString("F0") + " SECONDS");
-        GUILayout.EndHorizontal();
-        GUILayout.Label(message);
+        }
+        GUILayout.Label("CORRECT: " + correct);
         if (advance)
         {
-            if (GUI.Button(new Rect(0, Screen.height * 0.2f, Screen.width * 0.5f, Screen.height * 0.25f), "CONTINUE"))
-            {
-                if (Questions.Instance.CurrentGame.Turn == "1")
-                {
-                    Questions.Instance.CurrentGame.Player1Correct = correct.ToString();
-                }
-                else if (Questions.Instance.CurrentGame.Turn == "2")
-                {
-                    Questions.Instance.CurrentGame.Player2Correct = correct.ToString();
-                }
 
-                Application.LoadLevel("ChangeTurns");
+            if (Questions.Instance.CurrentGame.Turn == "1")
+            {
+                Questions.Instance.CurrentGame.Player1Correct = correct.ToString();
             }
+            else if (Questions.Instance.CurrentGame.Turn == "2")
+            {
+                Questions.Instance.CurrentGame.Player2Correct = correct.ToString();
+            }
+
+            Application.LoadLevel("ChangeTurns");
+            
         }
         else if (!questionAsked)
         {
@@ -168,6 +189,7 @@ public class MainGUI : MonoBehaviour {
             GUILayout.Box("<b>" + asked.QuestionText + "</b>");
             GUILayout.Space(20.0f);
             float height = 0.2f;
+            scroll = GUI.BeginScrollView(new Rect(0, Screen.height * height, Screen.width * 0.5f, Screen.height - (Screen.height * height)), scroll, new Rect(0, Screen.height * height, Screen.width * 0.5f, Screen.height));
             foreach (string answer in answers)
             {
                 if (GUI.Button(new Rect(0, Screen.height * height, Screen.width * 0.5f, Screen.height * 0.15f), answer))
@@ -177,6 +199,7 @@ public class MainGUI : MonoBehaviour {
                     if (answer.Equals(asked.CorrectAnswer))
                     {
                         message = "CORRECT ANSWER";
+                        feedbackMessage = "YOU ANSWERED CORRECTLY";
                         correct++;
                         if ((attemptingCrown) && (attempt != -1))
                         {
@@ -208,6 +231,8 @@ public class MainGUI : MonoBehaviour {
                             yourTurn = true;
                             crowning = true;
                             attemptingCrown = false;
+                            transition = false;
+                            feedbackMessage += "\nYOU HAVE ENOUGH CORRECT TO ATTEMPT A CROWN";
                         }
                         if (correct > 3)
                         {
@@ -216,6 +241,7 @@ public class MainGUI : MonoBehaviour {
                     }
                     else
                     {
+                        feedbackMessage = "QUESTION:\n\n" + asked.QuestionText + "\n\nYOU INCORRECTLY ANSWERED:\n" + answer + "\n\nTHE CORRECT ANSWER WAS:\n" + asked.CorrectAnswer;
                         if (attemptingCrown)
                         {
                             correct = 0;
@@ -227,9 +253,11 @@ public class MainGUI : MonoBehaviour {
                         attemptingCrown = false;
                         advance = true;
                     }
+                    feedback = true;
                 }
                 height += 0.2f;
             }
+            GUI.EndScrollView();
         }
     }
     private void AskCrowning(int crown)
@@ -251,18 +279,22 @@ public class MainGUI : MonoBehaviour {
                 correct = 3;
                 crowning = true;
                 attemptingCrown = false;
+                transitionMessage = "SPIN RESULTS: AUTOMATIC CROWNING";
                 //Choose category
             }
             else if (random == 7)
             {
                 Debug.Log("Special (rolled a 7)");
+                transitionMessage = "SPIN RESULTS: SUPER SPECIAL ROLL. SHOULD NOT HAPPEN";
                 //special
             }
             else
             {
                 Debug.Log("SetAsked random");
                 SetAsked(random);
+                transitionMessage = "THE CATEGORY IS " + Questions.Instance.Category[random];
             }
+            transition = true;
         }
         catch (System.Exception e)
         {

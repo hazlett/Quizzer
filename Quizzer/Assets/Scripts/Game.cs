@@ -11,6 +11,10 @@ public class Game {
 
     [XmlIgnore]
     internal static readonly string WinState = "111111";
+    [XmlIgnore]
+    internal static readonly string MaxRounds = "10";
+    [XmlIgnore]
+    internal static readonly string MaxInactiveDays = "3";
 
     [XmlAttribute]
     public string ID = "";
@@ -37,13 +41,16 @@ public class Game {
     public string Player2Totals = "000000";
 
     [XmlAttribute]
-    public string Round = "";
+    public string Round = "0";
 
     [XmlAttribute]
     public string Active = "";
 
     [XmlAttribute]
     public string DateCreated = "";
+
+    [XmlAttribute]
+    public string MoveTimestamp = "";
 
     [XmlAttribute]
     public string Classroom = "";
@@ -54,7 +61,6 @@ public class Game {
         Player1 = me;
         Player2 = them;
         Classroom = classroom;
-        Player2Totals = (Player2Totals.ToCharArray()[2] = 'c').ToString();
         DateCreated = DateTime.Now.ToString();
     }
     public string ToXml()

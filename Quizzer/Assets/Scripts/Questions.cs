@@ -379,14 +379,48 @@ public class Questions : MonoBehaviour {
                 break;
             case "1":
                 Debug.Log("Turn 1");
+                currentGame.MoveTimestamp = DateTime.Now.ToString();
                 currentGame.Turn = "2";
                 currentGame.Active = "true";
                 break;
             case "2":
                 Debug.Log("Turn 2");
+                currentGame.MoveTimestamp = DateTime.Now.ToString();
                 currentGame.Turn = "1";
                 currentGame.Round = (int.Parse(currentGame.Round) + 1).ToString();
                 currentGame.Active = "true";
+                if (int.Parse(currentGame.Round) >= int.Parse(Game.MaxRounds))
+                {
+                    Debug.Log("Exceeded max rounds. Game over");
+                    currentGame.Active = "false";
+                    int p1 = 0, p2 = 0;
+                    foreach (char c in currentGame.Player1Totals)
+                    {
+                        if (c == '1')
+                        {
+                            p1++;
+                        }
+                    }
+                    foreach (char c in currentGame.Player2Totals)
+                    {
+                        if (c == '2')
+                        {
+                            p2++;
+                        }
+                    }
+                    if (p1 > p2)
+                    {
+                        currentGame.Turn = "-1";
+                    }
+                    else if (p2 > p1)
+                    {
+                        currentGame.Turn = "-2";
+                    }
+                    else
+                    {
+                        currentGame.Turn = "-3";
+                    }
+                }
                 break;
             default:
                 games.Remove(currentGame);
