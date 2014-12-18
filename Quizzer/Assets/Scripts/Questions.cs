@@ -27,6 +27,7 @@ public class Questions : MonoBehaviour {
     private int refreshing;
     private Game currentGame;
     public Game CurrentGame { get { return currentGame; } }
+    internal bool advance;
 
     void Awake()
     {
@@ -42,6 +43,7 @@ public class Questions : MonoBehaviour {
     }
 	void Start () {
         refreshing = 0;
+        advance = false;
         invites = new List<string>();
         allQuestions = new List<Question>();
         categories = new List<Question>[] { new List<Question>(), new List<Question>(), new List<Question>(), new List<Question>(), new List<Question>(), new List<Question>() };
@@ -354,6 +356,7 @@ public class Questions : MonoBehaviour {
 
     internal void ChangeTurn()
     {
+        Debug.Log("Changing Turn");
         if (Game.WinState == currentGame.Player1Totals)
         {
             currentGame.Turn = "-1";
@@ -428,9 +431,29 @@ public class Questions : MonoBehaviour {
                 Debug.Log("Unknown turn");
                 break;
         }
+        Debug.Log("TURN CHANGED");
         StartCoroutine(SaveGame());
     }
-
+    internal void QuickSave()
+    {
+        StartCoroutine(QuickSaveGame());
+    }
+    private IEnumerator QuickSaveGame()
+    {
+        WWWForm form2 = new WWWForm();
+        form2.AddField("id", currentGame.ID);
+        form2.AddField("content", currentGame.ToXml());
+        WWW www2 = new WWW("http://hazlett206.ddns.net/Quizzer/SaveGame.php", form2);
+        yield return www2;
+        if (www2.error == null)
+        {
+            Debug.Log("Quick Saved GAME: " + www2.text.Replace("\n", ""));
+        }
+        else
+        {
+            Debug.Log("QUICK SAVE ERROR: " + www2.error);
+        }
+    }
     private IEnumerator SaveGame()
     {
         WWWForm form2 = new WWWForm();
@@ -440,14 +463,14 @@ public class Questions : MonoBehaviour {
         yield return www2;
         if (www2.error == null)
         {
-            Debug.Log("Created game with ID: " + www2.text.Replace("\n", ""));
+            Debug.Log("Saved game with ID: " + www2.text.Replace("\n", ""));
         }
         else
         {
-            Debug.Log("Creating game with ID ERROR: " + www2.error);
+            Debug.Log("Save game ERROR: " + www2.error);
         }
         Refresh();
-        Application.LoadLevel("Menu");
+        advance = true;
     }
     private IEnumerator AcceptGameInvite(string invite)
     {
