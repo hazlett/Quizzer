@@ -46,7 +46,8 @@ public class AdvanceToMenu : MonoBehaviour {
     {
         WWWForm form = new WWWForm();
         form.AddField("username", user);
-        WWW www = new WWW("http://hazlett206.ddns.net/Quizzer/LoadUser.php", form);
+        Debug.Log("Username: " + user);
+        WWW www = new WWW("http://hazlettdavid.com/Quizzer/LoadUser.php", form);
         yield return www;
         if (www.error == null)
         {
@@ -65,7 +66,7 @@ public class AdvanceToMenu : MonoBehaviour {
         WWWForm form = new WWWForm();
         form.AddField("username", user);
         form.AddField("content", newUser.ToXml());
-        WWW www = new WWW("http://hazlett206.ddns.net/Quizzer/CreateUser.php", form);
+        WWW www = new WWW("http://hazlettdavid.com/Quizzer/CreateUser.php", form);
         yield return www;
         if (www.error == null)
         {

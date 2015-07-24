@@ -51,7 +51,7 @@ public class NewGameMenuGUI : MonoBehaviour {
     }
     private IEnumerator LoadUsers()
     {
-        WWW www = new WWW("http://hazlett206.ddns.net/Quizzer/GetUsers.php");
+        WWW www = new WWW("http://hazlettdavid.com/Quizzer/GetUsers.php");
         yield return www;
         if (www.error == null)
         {

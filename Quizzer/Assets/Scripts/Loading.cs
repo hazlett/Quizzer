@@ -10,8 +10,8 @@ public class Loading : MonoBehaviour {
     private static Loading instance;
     public static Loading Instance { get { return instance; } }
     private bool loaded = false, loading = false, categories = false;
-    private string getQuestionsXMLURL = "http://hazlett206.ddns.net/QuestionManager/GetQuestionsXML.php",
-        getCategoriesURL = "http://hazlett206.ddns.net/QuestionManager/GetCategories.php";
+    private string getQuestionsXMLURL = "http://hazlettdavid.com/QuestionManager/GetQuestionsXML.php",
+        getCategoriesURL = "http://hazlettdavid.com/QuestionManager/GetCategories.php";
     private string message = "";
     private List<string> classrooms;
     public List<string> Classrooms { get { return classrooms; } }
@@ -67,8 +67,8 @@ public class Loading : MonoBehaviour {
             name = "QuestionManager";
         }
         loading = true;
-        getQuestionsXMLURL = "http://hazlett206.ddns.net/" + name + "/GetQuestionsXML.php";
-        getCategoriesURL = "http://hazlett206.ddns.net/" + name + "/GetCategories.php";
+        getQuestionsXMLURL = "http://hazlettdavid.com/" + name + "/GetQuestionsXML.php";
+        getCategoriesURL = "http://hazlettdavid.com/" + name + "/GetCategories.php";
         StartCoroutine(Load());
         StartCoroutine(LoadCategories());
     }

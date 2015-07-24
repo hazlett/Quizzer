@@ -83,7 +83,7 @@ public class Questions : MonoBehaviour {
         refreshing++;
         WWWForm form = new WWWForm();
         form.AddField("id", id);
-        WWW www = new WWW("http://hazlett206.ddns.net/Quizzer/GetGame.php", form);
+        WWW www = new WWW("http://hazlettdavid.com/Quizzer/GetGame.php", form);
         yield return www;
         if (www.error == null)
         {
@@ -181,7 +181,7 @@ public class Questions : MonoBehaviour {
         Debug.Log("Removing game: " + game.ID);
         WWWForm form = new WWWForm();
         form.AddField("gameid", game.ID);
-        WWW www = new WWW("http://hazlett206.ddns.net/Quizzer/RemoveGame.php", form);
+        WWW www = new WWW("http://hazlettdavid.com/Quizzer/RemoveGame.php", form);
         yield return www;
         if (www.error == null)
         {
@@ -222,7 +222,7 @@ public class Questions : MonoBehaviour {
     {
         WWWForm form = new WWWForm();
         form.AddField("content", game.ToXml());
-        WWW www = new WWW("http://hazlett206.ddns.net/Quizzer/CreateGameID.php", form);
+        WWW www = new WWW("http://hazlettdavid.com/Quizzer/CreateGameID.php", form);
         yield return www;
 
         if (www.error == null)
@@ -235,7 +235,7 @@ public class Questions : MonoBehaviour {
             WWWForm form2 = new WWWForm();
             form2.AddField("id", game.ID);
             form2.AddField("content", game.ToXml());
-            WWW www2 = new WWW("http://hazlett206.ddns.net/Quizzer/CreateGame.php", form2);
+            WWW www2 = new WWW("http://hazlettdavid.com/Quizzer/CreateGame.php", form2);
             yield return www2;
             if (www2.error == null)
             {
@@ -262,7 +262,7 @@ public class Questions : MonoBehaviour {
         form.AddField("gameid", gameID);
         form.AddField("playerid", playerID);
         Debug.Log("playerid: " + playerID);
-        WWW www = new WWW("http://hazlett206.ddns.net/Quizzer/SendInvite.php", form);
+        WWW www = new WWW("http://hazlettdavid.com/Quizzer/SendInvite.php", form);
         yield return www;
         if (www.error == null)
         {
@@ -280,10 +280,11 @@ public class Questions : MonoBehaviour {
     }
     private IEnumerator GetGameInvites()
     {
+        Debug.Log(user.Name);
         Debug.Log("Getting invites");
         WWWForm form = new WWWForm();
         form.AddField("userid", user.Name);
-        WWW www = new WWW("http://hazlett206.ddns.net/Quizzer/CheckInvites.php", form);
+        WWW www = new WWW("http://hazlettdavid.com/Quizzer/CheckInvites.php", form);
         yield return www;
         if (www.error == null)
         {
@@ -436,7 +437,7 @@ public class Questions : MonoBehaviour {
         WWWForm form2 = new WWWForm();
         form2.AddField("id", currentGame.ID);
         form2.AddField("content", currentGame.ToXml());
-        WWW www2 = new WWW("http://hazlett206.ddns.net/Quizzer/SaveGame.php", form2);
+        WWW www2 = new WWW("http://hazlettdavid.com/Quizzer/SaveGame.php", form2);
         yield return www2;
         if (www2.error == null)
         {
@@ -454,7 +455,7 @@ public class Questions : MonoBehaviour {
         WWWForm form = new WWWForm();
         form.AddField("userid", user.Name);
         form.AddField("gameid", invite);
-        WWW www = new WWW("http://hazlett206.ddns.net/Quizzer/AcceptInvite.php", form);
+        WWW www = new WWW("http://hazlettdavid.com/Quizzer/AcceptInvite.php", form);
         yield return www;
         if (www.error == null)
         {
@@ -486,7 +487,7 @@ public class Questions : MonoBehaviour {
         WWWForm form = new WWWForm();
         form.AddField("userid", user.Name);
         form.AddField("gameid", invite);
-        WWW www = new WWW("http://hazlett206.ddns.net/Quizzer/DeclineInvite.php", form);
+        WWW www = new WWW("http://hazlettdavid.com/Quizzer/DeclineInvite.php", form);
         yield return www;
         if (www.error == null)
         {
@@ -508,7 +509,7 @@ public class Questions : MonoBehaviour {
         WWWForm form = new WWWForm();
         form.AddField("userid", user.Name);
         form.AddField("content", user.ToXml());
-        WWW www = new WWW("http://hazlett206.ddns.net/Quizzer/SaveUser.php", form);
+        WWW www = new WWW("http://hazlettdavid.com/Quizzer/SaveUser.php", form);
         yield return www;
         if (www.error == null)
         {

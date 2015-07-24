@@ -11,7 +11,7 @@ public class CameraManager : MonoBehaviour {
     }
     void ApplyBackground()
     {
-        camera.backgroundColor = color;
+        GetComponent<Camera>().backgroundColor = color;
     }
 
 }
