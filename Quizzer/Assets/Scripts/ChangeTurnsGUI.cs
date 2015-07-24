@@ -5,12 +5,19 @@ public class ChangeTurnsGUI : MonoBehaviour {
 
     void Start()
     {
-        Questions.Instance.ChangeTurn();
+    }
+    void Update()
+    {
+        if (Questions.Instance.advance)
+        {
+            Questions.Instance.advance = false;
+            Application.LoadLevel("Menu");
+        }
     }
 
     void OnGUI()
     {
-        GUI.matrix = Matrix4x4.TRS(Vector3.zero, Quaternion.identity, new Vector3(Screen.width / Utility.SCREENWIDTH, Screen.height / Utility.SCREENHEIGHT, 1)); 
+        GUI.matrix = Matrix4x4.TRS(Utility.GUIPOSITION, Quaternion.identity, new Vector3(Screen.width / Utility.SCREENWIDTH, Screen.height / Utility.SCREENHEIGHT, 1)); 
         GUILayout.Label("<b>SENDING MOVE</b>");
     }
 }

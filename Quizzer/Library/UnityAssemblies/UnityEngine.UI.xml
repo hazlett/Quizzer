@@ -5,7 +5,11 @@
 	</assembly>
 	<members>
 		<member name="T:UnityEngine.UI.CanvasScaler/ScaleMode">
+<<<<<<< HEAD
 			<summary>Scaling mode to draw textures with.</summary>
+=======
+			<summary></summary>
+>>>>>>> origin/master
 		</member>
 	</members>
 </doc>

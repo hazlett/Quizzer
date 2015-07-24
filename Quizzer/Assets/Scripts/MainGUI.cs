@@ -15,6 +15,7 @@ public class MainGUI : MonoBehaviour {
     private int attempt;
     private bool crowning, attemptingCrown, feedback;
     private Vector2 scroll;
+    private Touch touch;
 	void Start () {
         attempt = -1;
         attemptingCrown = false;
@@ -45,8 +46,11 @@ public class MainGUI : MonoBehaviour {
 	}
 	
 	void Update () {
+
         if (CheckWinState())
         {
+            Debug.Log("Win state");
+            Questions.Instance.ChangeTurn();
             Application.LoadLevel("ChangeTurns");
         }
 	    if (questionAsked)
@@ -75,7 +79,7 @@ public class MainGUI : MonoBehaviour {
     }
     void OnGUI()
     {
-        GUI.matrix = Matrix4x4.TRS(Vector3.zero, Quaternion.identity, new Vector3(Screen.width / Utility.SCREENWIDTH, Screen.height / Utility.SCREENHEIGHT, 1)); 
+        GUI.matrix = Matrix4x4.TRS(Utility.GUIPOSITION, Quaternion.identity, new Vector3(Screen.width / Utility.SCREENWIDTH, Screen.height / Utility.SCREENHEIGHT, 1)); 
         if (Questions.Instance.CurrentGame.Round == "0")
         {
             GUILayout.Label("<b>ACCEPTING INVITATION: INITIAL ROUND</b>");
@@ -163,18 +167,9 @@ public class MainGUI : MonoBehaviour {
         GUILayout.Label("CORRECT: " + correct);
         if (advance)
         {
-
-            if (Questions.Instance.CurrentGame.Turn == "1")
-            {
-                Questions.Instance.CurrentGame.Player1Correct = correct.ToString();
-            }
-            else if (Questions.Instance.CurrentGame.Turn == "2")
-            {
-                Questions.Instance.CurrentGame.Player2Correct = correct.ToString();
-            }
-
-            Application.LoadLevel("ChangeTurns");
-            
+            advance = false;
+            Debug.Log("Advancing from Main to Change Turns");
+            Application.LoadLevel("ChangeTurns");         
         }
         else if (!questionAsked)
         {
@@ -189,7 +184,7 @@ public class MainGUI : MonoBehaviour {
             GUILayout.Box("<b>" + asked.QuestionText + "</b>");
             GUILayout.Space(20.0f);
             float height = 0.2f;
-            scroll = GUI.BeginScrollView(new Rect(0, Screen.height * height, Screen.width * 0.5f, Screen.height - (Screen.height * height)), scroll, new Rect(0, Screen.height * height, Screen.width * 0.5f, Screen.height));
+            scroll = GUI.BeginScrollView(new Rect(0, Screen.height * height, Screen.width * 0.5f, Screen.height - (Screen.height * height)), scroll, new Rect(0, Screen.height * height, Screen.width * 0.5f,  Screen.height - (Screen.height * height)));
             foreach (string answer in answers)
             {
                 if (GUI.Button(new Rect(0, Screen.height * height, Screen.width * 0.5f, Screen.height * 0.15f), answer))
@@ -238,6 +233,15 @@ public class MainGUI : MonoBehaviour {
                         {
                             correct = 0;
                         }
+                        if (Questions.Instance.CurrentGame.Turn == "1")
+                        {
+                            Questions.Instance.CurrentGame.Player1Correct = correct.ToString();
+                        }
+                        else if (Questions.Instance.CurrentGame.Turn == "2")
+                        {
+                            Questions.Instance.CurrentGame.Player2Correct = correct.ToString();
+                        }
+                        Questions.Instance.QuickSave();
                     }
                     else
                     {
@@ -245,6 +249,14 @@ public class MainGUI : MonoBehaviour {
                         if (attemptingCrown)
                         {
                             correct = 0;
+                            if (Questions.Instance.CurrentGame.Turn == "1")
+                            {
+                                Questions.Instance.CurrentGame.Player1Correct = correct.ToString();
+                            }
+                            else if (Questions.Instance.CurrentGame.Turn == "2")
+                            {
+                                Questions.Instance.CurrentGame.Player2Correct = correct.ToString();
+                            }
                         }
                         message = "WRONG ANSWER";
                         yourTurn = false;
@@ -252,6 +264,7 @@ public class MainGUI : MonoBehaviour {
                         attempt = -1;
                         attemptingCrown = false;
                         advance = true;
+                        Questions.Instance.ChangeTurn();
                     }
                     feedback = true;
                 }
