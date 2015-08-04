@@ -91,6 +91,8 @@ public class MainGUI : MonoBehaviour {
         if (feedback)
         {
             GUILayout.Label(feedbackMessage);
+            GUILayout.Label("EXPLANATION");
+            GUILayout.Label(asked.Explanation);
             if (GUILayout.Button("CONTINUE"))
             {
                 feedback = false;
@@ -161,7 +163,7 @@ public class MainGUI : MonoBehaviour {
     {
         if (questionAsked)
         {
-            GUILayout.Box(Questions.Instance.Category[int.Parse(asked.Category)]);
+            //GUILayout.Box(Questions.Instance.Category[int.Parse(asked.Category)]);
             GUILayout.Label("TIME TO ANSWER: " + timeRemaining.ToString("F0") + " SECONDS");
         }
         GUILayout.Label("CORRECT: " + correct);
@@ -191,7 +193,7 @@ public class MainGUI : MonoBehaviour {
                 {
                     questionAsked = false;
                     timer = 0;
-                    if (answer.Equals(asked.CorrectAnswer))
+                    if (answer.Equals(answers[asked.CorrectIndex - 1]))
                     {
                         message = "CORRECT ANSWER";
                         feedbackMessage = "YOU ANSWERED CORRECTLY";
@@ -245,7 +247,7 @@ public class MainGUI : MonoBehaviour {
                     }
                     else
                     {
-                        feedbackMessage = "QUESTION:\n\n" + asked.QuestionText + "\n\nYOU INCORRECTLY ANSWERED:\n" + answer + "\n\nTHE CORRECT ANSWER WAS:\n" + asked.CorrectAnswer;
+                        feedbackMessage = "QUESTION:\n\n" + asked.QuestionText + "\n\nYOU INCORRECTLY ANSWERED:\n" + answer + "\n\nTHE CORRECT ANSWER WAS:\n" + asked.Answers[asked.CorrectIndex - 1];
                         if (attemptingCrown)
                         {
                             correct = 0;
@@ -282,6 +284,7 @@ public class MainGUI : MonoBehaviour {
     }
     private void Spin()
     {
+
         try
         {
             message = "SPINNING";
@@ -305,7 +308,7 @@ public class MainGUI : MonoBehaviour {
             {
                 Debug.Log("SetAsked random");
                 SetAsked(random);
-                transitionMessage = "THE CATEGORY IS " + Questions.Instance.Category[random];
+                //transitionMessage = "THE CATEGORY IS " + Questions.Instance.Category[random];
             }
             transition = true;
         }
@@ -317,11 +320,11 @@ public class MainGUI : MonoBehaviour {
     }
     private void SetAsked(int i)
     {
+
         asked = Questions.Instance.RetrieveQuestion(i);
         Debug.Log("SetAsked (i): " + i + " | " + "Asked: " + asked.ID);
         answers = new List<string>();
-        answers.Add(asked.CorrectAnswer);
-        foreach (string answer in asked.WrongAnswers)
+        foreach (string answer in asked.Answers)
         {
             answers.Add(answer);
         }

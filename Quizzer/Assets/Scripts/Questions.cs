@@ -330,9 +330,11 @@ public class Questions : MonoBehaviour {
     }
     public Question RetrieveQuestion(int category)
     {
-        int random = UnityEngine.Random.Range(0, categories[category].Count);
-        Debug.Log("Category: " + category + " | Random: " + random);
-        return categories[category][random];
+        Question quest = allQuestions[UnityEngine.Random.Range(0, allQuestions.Count)];
+        return quest;
+        //int random = UnityEngine.Random.Range(0, categories[category].Count);
+        //Debug.Log("Category: " + category + " | Random: " + random);
+        //return categories[category][random];
     }
     private void Sort()
     {
@@ -341,10 +343,10 @@ public class Questions : MonoBehaviour {
 
     private IEnumerator SortQuestions()
     {
-        foreach (Question question in allQuestions)
-        {
-            categories[int.Parse(question.Category)].Add(question);
-        }
+        //foreach (Question question in allQuestions)
+        //{
+        //    categories[int.Parse(question.Category)].Add(question);
+        //}
 
         yield return null;
     }

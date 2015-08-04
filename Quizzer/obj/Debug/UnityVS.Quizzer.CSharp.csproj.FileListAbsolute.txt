@@ -1,0 +1,17 @@
+Z:\Development Projects\GitHub\Quizzer\Quizzer\Temp\UnityVS_bin\Debug\Assembly-CSharp.dll
+Z:\Development Projects\GitHub\Quizzer\Quizzer\Temp\UnityVS_bin\Debug\Assembly-CSharp.pdb
+Z:\Development Projects\GitHub\Quizzer\Quizzer\Temp\UnityVS_bin\Debug\UnityEditor.dll
+Z:\Development Projects\GitHub\Quizzer\Quizzer\Temp\UnityVS_bin\Debug\UnityEditor.iOS.Extensions.Xcode.dll
+Z:\Development Projects\GitHub\Quizzer\Quizzer\Temp\UnityVS_bin\Debug\UnityEngine.Analytics.dll
+Z:\Development Projects\GitHub\Quizzer\Quizzer\Temp\UnityVS_bin\Debug\UnityEngine.dll
+Z:\Development Projects\GitHub\Quizzer\Quizzer\Temp\UnityVS_bin\Debug\UnityEngine.Networking.dll
+Z:\Development Projects\GitHub\Quizzer\Quizzer\Temp\UnityVS_bin\Debug\UnityEngine.UI.dll
+Z:\Development Projects\GitHub\Quizzer\Quizzer\Temp\UnityVS_bin\Debug\UnityEngine.xml
+Z:\Development Projects\GitHub\Quizzer\Quizzer\Temp\UnityVS_bin\Debug\UnityEditor.xml
+Z:\Development Projects\GitHub\Quizzer\Quizzer\Temp\UnityVS_bin\Debug\UnityEngine.UI.xml
+Z:\Development Projects\GitHub\Quizzer\Quizzer\Temp\UnityVS_bin\Debug\UnityEngine.Networking.xml
+Z:\Development Projects\GitHub\Quizzer\Quizzer\Temp\UnityVS_bin\Debug\UnityEngine.Analytics.xml
+Z:\Development Projects\GitHub\Quizzer\Quizzer\Temp\UnityVS_bin\Debug\UnityEditor.iOS.Extensions.Xcode.xml
+Z:\Development Projects\GitHub\Quizzer\Quizzer\obj\Debug\UnityVS.Quizzer.CSharp.csprojResolveAssemblyReference.cache
+Z:\Development Projects\GitHub\Quizzer\Quizzer\obj\Debug\Assembly-CSharp.dll
+Z:\Development Projects\GitHub\Quizzer\Quizzer\obj\Debug\Assembly-CSharp.pdb

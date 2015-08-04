@@ -116,25 +116,26 @@ public class Loading : MonoBehaviour {
             XmlDocument doc = new XmlDocument();
             doc.LoadXml(text);
 
-            List<Question> obj = new List<Question>();
-            XmlSerializer serializer = new XmlSerializer(typeof(List<Question>));
+            QuestionsList obj = new QuestionsList();
+            XmlSerializer serializer = new XmlSerializer(typeof(QuestionsList));
             XmlReader reader = new XmlNodeReader(doc);
 
-            obj = serializer.Deserialize(reader) as List<Question>;
+            obj = serializer.Deserialize(reader) as QuestionsList;
 #if UNITY_EDITOR
             Debug.Log("Questions");
             int count = 0;
-            foreach (Question q in obj)
+            foreach (Question q in obj.Questions)
             {
                 Debug.Log(q.ID + " | " + q.QuestionText);
                 count++;
             }
             Debug.Log("Number of Questions: " + count);
 #endif
-            return obj;
+            return obj.Questions;
         }
-        catch (Exception)
+        catch (Exception e)
         {
+            Debug.LogError("Deserialize Catch: " + e.Message);
             return new List<Question>();
         }
     }
