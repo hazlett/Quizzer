@@ -1,8 +1,13 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.UI;
 public class QuestionManager : MonoBehaviour
 {
+
+    public Text QuestionText, Answer1, Answer2, Answer3, Answer4;
+
+    private int answerSelected;
 
     private float timer, maxTime = 25.0f, timeRemaining;
     private bool questionAsked, advance;
@@ -14,11 +19,13 @@ public class QuestionManager : MonoBehaviour
     private string player;
     private bool yourTurn, transition;
     private int attempt;
-    private bool crowning, attemptingCrown, feedback;
+    private bool crowning, attemptingCrown, feedback, drawn;
     private Vector2 scroll;
     private Touch touch;
     void Start()
     {
+        answerSelected = 0;
+        drawn = false;
         attempt = -1;
         attemptingCrown = false;
         feedback = false;
@@ -82,7 +89,6 @@ public class QuestionManager : MonoBehaviour
     }
     void OnGUI()
     {
-        GUI.matrix = Matrix4x4.TRS(Utility.GUIPOSITION, Quaternion.identity, new Vector3(Screen.width / Utility.SCREENWIDTH, Screen.height / Utility.SCREENHEIGHT, 1));
         if (Questions.Instance.CurrentGame.Round == "0")
         {
             GUILayout.Label("<b>ACCEPTING INVITATION: INITIAL ROUND</b>");
@@ -162,6 +168,18 @@ public class QuestionManager : MonoBehaviour
             crowning = false;
         }
     }
+    public void SelectAnswer(int id)
+    {
+        answerSelected = id;
+        if (id == asked.CorrectIndex)
+        {
+            Debug.Log("Correct");
+        }
+        else
+        {
+            Debug.Log("Wrong");
+        }
+    }
     private void DrawGameplay()
     {
         if (questionAsked)
@@ -190,91 +208,96 @@ public class QuestionManager : MonoBehaviour
             GUILayout.Space(20.0f);
             float height = 0.2f;
             scroll = GUI.BeginScrollView(new Rect(0, Screen.height * height, Screen.width * 0.5f, Screen.height - (Screen.height * height)), scroll, new Rect(0, Screen.height * height, Screen.width * 0.5f, Screen.height - (Screen.height * height)));
-            foreach (string answer in answers)
-            {
-                if (GUI.Button(new Rect(0, Screen.height * height, Screen.width * 0.5f, Screen.height * 0.15f), answer))
-                {
-                    questionAsked = false;
-                    timer = 0;
-                    if (answer.Equals(answers[asked.CorrectIndex - 1]))
-                    {
-                        message = "CORRECT ANSWER";
-                        feedbackMessage = "YOU ANSWERED CORRECTLY";
-                        correct++;
-                        if ((attemptingCrown) && (attempt != -1))
-                        {
-                            if (Questions.Instance.CurrentGame.Turn == "1")
-                            {
-                                Debug.Log("Saving turn 1");
-                                Debug.Log("Attempt: " + attempt);
-                                char[] temp = Questions.Instance.CurrentGame.Player1Totals.ToCharArray();
-                                temp[attempt] = '1';
-                                totals = new string(temp);
-                                Debug.Log("TOTALS: " + totals);
-                                Questions.Instance.CurrentGame.Player1Totals = totals;
-                            }
-                            else if (Questions.Instance.CurrentGame.Turn == "2")
-                            {
-                                Debug.Log("Saving turn 2");
-                                Debug.Log("Attempt: " + attempt);
-                                char[] temp = Questions.Instance.CurrentGame.Player2Totals.ToCharArray();
-                                temp[attempt] = '1';
-                                totals = new string(temp);
-                                Debug.Log("TOTALS: " + totals);
-                                Questions.Instance.CurrentGame.Player2Totals = totals;
-                            }
-                            attempt = -1;
-                            correct = 0;
-                        }
-                        if (correct == 3)
-                        {
-                            yourTurn = true;
-                            crowning = true;
-                            attemptingCrown = false;
-                            transition = false;
-                            feedbackMessage += "\nYOU HAVE ENOUGH CORRECT TO ATTEMPT A CROWN";
-                        }
-                        if (correct > 3)
-                        {
-                            correct = 0;
-                        }
-                        if (Questions.Instance.CurrentGame.Turn == "1")
-                        {
-                            Questions.Instance.CurrentGame.Player1Correct = correct.ToString();
-                        }
-                        else if (Questions.Instance.CurrentGame.Turn == "2")
-                        {
-                            Questions.Instance.CurrentGame.Player2Correct = correct.ToString();
-                        }
-                        Questions.Instance.QuickSave();
-                    }
-                    else
-                    {
-                        feedbackMessage = "QUESTION:\n\n" + asked.QuestionText + "\n\nYOU INCORRECTLY ANSWERED:\n" + answer + "\n\nTHE CORRECT ANSWER WAS:\n" + asked.Answers[asked.CorrectIndex - 1];
-                        if (attemptingCrown)
-                        {
-                            correct = 0;
-                            if (Questions.Instance.CurrentGame.Turn == "1")
-                            {
-                                Questions.Instance.CurrentGame.Player1Correct = correct.ToString();
-                            }
-                            else if (Questions.Instance.CurrentGame.Turn == "2")
-                            {
-                                Questions.Instance.CurrentGame.Player2Correct = correct.ToString();
-                            }
-                        }
-                        message = "WRONG ANSWER";
-                        yourTurn = false;
-                        crowning = false;
-                        attempt = -1;
-                        attemptingCrown = false;
-                        advance = true;
-                        Questions.Instance.ChangeTurn();
-                    }
-                    feedback = true;
-                }
-                height += 0.2f;
-            }
+            Answer1.text = answers[0];
+            Answer2.text = answers[1];
+            Answer3.text = answers[2];
+            Answer4.text = answers[3];
+            //foreach (string answer in answers)
+            //{
+
+                //if (GUI.Button(new Rect(0, Screen.height * height, Screen.width * 0.5f, Screen.height * 0.15f), answer))
+                //{
+                //    questionAsked = false;
+                //    timer = 0;
+                //    if (answer.Equals(answers[asked.CorrectIndex - 1]))
+                //    {
+                //        message = "CORRECT ANSWER";
+                //        feedbackMessage = "YOU ANSWERED CORRECTLY";
+                //        correct++;
+                //        if ((attemptingCrown) && (attempt != -1))
+                //        {
+                //            if (Questions.Instance.CurrentGame.Turn == "1")
+                //            {
+                //                Debug.Log("Saving turn 1");
+                //                Debug.Log("Attempt: " + attempt);
+                //                char[] temp = Questions.Instance.CurrentGame.Player1Totals.ToCharArray();
+                //                temp[attempt] = '1';
+                //                totals = new string(temp);
+                //                Debug.Log("TOTALS: " + totals);
+                //                Questions.Instance.CurrentGame.Player1Totals = totals;
+                //            }
+                //            else if (Questions.Instance.CurrentGame.Turn == "2")
+                //            {
+                //                Debug.Log("Saving turn 2");
+                //                Debug.Log("Attempt: " + attempt);
+                //                char[] temp = Questions.Instance.CurrentGame.Player2Totals.ToCharArray();
+                //                temp[attempt] = '1';
+                //                totals = new string(temp);
+                //                Debug.Log("TOTALS: " + totals);
+                //                Questions.Instance.CurrentGame.Player2Totals = totals;
+                //            }
+                //            attempt = -1;
+                //            correct = 0;
+                //        }
+                //        if (correct == 3)
+                //        {
+                //            yourTurn = true;
+                //            crowning = true;
+                //            attemptingCrown = false;
+                //            transition = false;
+                //            feedbackMessage += "\nYOU HAVE ENOUGH CORRECT TO ATTEMPT A CROWN";
+                //        }
+                //        if (correct > 3)
+                //        {
+                //            correct = 0;
+                //        }
+                //        if (Questions.Instance.CurrentGame.Turn == "1")
+                //        {
+                //            Questions.Instance.CurrentGame.Player1Correct = correct.ToString();
+                //        }
+                //        else if (Questions.Instance.CurrentGame.Turn == "2")
+                //        {
+                //            Questions.Instance.CurrentGame.Player2Correct = correct.ToString();
+                //        }
+                //        Questions.Instance.QuickSave();
+                //    }
+                //    else
+                //    {
+                //        feedbackMessage = "QUESTION:\n\n" + asked.QuestionText + "\n\nYOU INCORRECTLY ANSWERED:\n" + answer + "\n\nTHE CORRECT ANSWER WAS:\n" + asked.Answers[asked.CorrectIndex - 1];
+                //        if (attemptingCrown)
+                //        {
+                //            correct = 0;
+                //            if (Questions.Instance.CurrentGame.Turn == "1")
+                //            {
+                //                Questions.Instance.CurrentGame.Player1Correct = correct.ToString();
+                //            }
+                //            else if (Questions.Instance.CurrentGame.Turn == "2")
+                //            {
+                //                Questions.Instance.CurrentGame.Player2Correct = correct.ToString();
+                //            }
+                //        }
+                //        message = "WRONG ANSWER";
+                //        yourTurn = false;
+                //        crowning = false;
+                //        attempt = -1;
+                //        attemptingCrown = false;
+                //        advance = true;
+                //        Questions.Instance.ChangeTurn();
+                //    }
+                //    feedback = true;
+                //}
+                //height += 0.2f;
+            //}
             GUI.EndScrollView();
         }
     }
